@@ -18,10 +18,11 @@ require_relative 'config/application'
 	## Run the application.
 	def start_todo
 
+
 		if ARGV.any?
 			cmd = ARGV.shift(1)
 			if ARGV.any?
-				task_id = ARGV[0].to_i
+				index = ARGV[0].to_i
 				task_name = ARGV[0..-1].join(' ')
 			end
 
@@ -30,9 +31,9 @@ require_relative 'config/application'
 			elsif cmd.join.casecmp("list") == 0
 				Task.disp_task
 			elsif cmd.join.casecmp("delete") == 0
-				Task.del_task(task_id)		
+				Task.del_task(index)		
 			elsif cmd.join.casecmp("complete") == 0
-				Task.complete_task(task_id)
+				Task.complete_task(index)
 			end
 		else
 			puts "\nNo input was given. Please re-enter..\n\n"
@@ -40,11 +41,13 @@ require_relative 'config/application'
 		end
 	end
 
-
+#Task.re_index_taskid
 start_todo
-# Task.all.each do |t|
-# 	puts t.name, t.complete
+# all_tasks = Task.all
+# puts all_tasks[2].name, all_tasks[2].id
+# tasks = Task.all
+# tasks.each do |t|
+# 	puts "#{t.id}. #{t.name} #{t.complete}"
 # end
-
 
 		

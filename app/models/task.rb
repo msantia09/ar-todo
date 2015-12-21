@@ -1,11 +1,18 @@
+#require 'byebug'
+
 class Task < ActiveRecord::Base
 
 	validates :name, presence: true
   	validates :name, uniqueness: true
 
+
+  	def self.find_all_tasks
+  		Task.all
+  	end
+
 	## Displays a list of tasks.
 	def self.disp_task
-		all_tasks = Task.all
+		all_tasks = find_all_tasks
 
 		if all_tasks.empty?
 			puts "No tasks in the list."
@@ -24,7 +31,7 @@ class Task < ActiveRecord::Base
 
 
 	## Finds a specific task by task id.
-	def self.find_a_task(task_id)
+	def self.find_tasks(index)
 		Task.find(task_id)
 	end
 
@@ -37,29 +44,48 @@ class Task < ActiveRecord::Base
 
 
 	## Deletes a task and displays the updated list.
-	def self.del_task(task_id)
-		task = find_a_task(task_id)
+	def self.del_task(index)
+		all_tasks = find_all_tasks
 
-		if task == nil
+		if all_tasks == nil
 			puts "Invalid task."
 		else
-			puts "Deleted \"#{task.name}\" from your TODO list..."
-			task.destroy
+			puts "Deleted \"#{all_tasks[index-1].name}\" from your TODO list..."
+			all_tasks.each_with_index do |t, idx|
+				if idx == index-1
+					t.destroy
+				end
+			end
+			re_index_taskid
 			disp_task
 		end
 	end
 
 
-	## Marks a task as completed and displays the updated list.
-	def self.complete_task(task_id)
-		task = find_a_task(task_id)
+	def self.re_index_taskid
+		all_tasks = find_all_tasks
+		all_tasks.each_with_index do |t, idx|
+			t.update(id: idx+1)
+		end
+	end
 
-		if task == nil
+
+	## Marks a task as completed and displays the updated list.
+	def self.complete_task(index)
+		all_tasks = find_all_tasks
+
+		if all_tasks == nil
 			puts "Invalid task."
 		else
-			puts "Task is marked as Completed [X]."
-			task.update_attributes(complete: true)
+			puts "Task #{all_tasks[index-1].name} is marked as Completed [X]."
+			all_tasks.each_with_index do |t, idx|
+				if idx == index-1
+					t.update_attributes(complete: true)
+				end
+			end
+			re_index_taskid
+			disp_task
 		end
-		disp_task
+
 	end
 end
